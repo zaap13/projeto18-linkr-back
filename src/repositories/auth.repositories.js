@@ -1,3 +1,5 @@
+import { connection } from "../database/db";
+
 export function insertUser(username, email, hashPassword, picture) {
   //Esperando banco de dados
 }
