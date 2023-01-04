@@ -9,7 +9,6 @@ export async function postUser(req, res) {
 
   try {
     await insertUser(username, email, hashPassword, picture);
-    console.log(email, password, username, picture);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
@@ -33,7 +32,6 @@ export async function signIn(req, res) {
     }
 
     const token = generateToken(user.rows[0].id);
-    console.log(token);
 
     res.status(201).send({ token });
   } catch (err) {
