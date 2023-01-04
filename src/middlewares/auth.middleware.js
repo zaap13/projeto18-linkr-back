@@ -21,13 +21,13 @@ export async function authMiddleware(req, res, next) {
     return res.status(401).send({ message: "Invalid Token!" });
   }
   try {
-    /* const user = await connection.query(
+    const user = await connection.query(
       `SELECT id FROM users WHERE users.id = '${id}'`
     );
     if (!user.rows[0]) {
       return res.sendStatus(401);
     }
-    req.user = user.rows[0]; */
+    req.user = user.rows[0];
     next();
   } catch (err) {
     console.log(err);
