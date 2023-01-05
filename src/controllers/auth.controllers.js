@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { insertUser, selectUser } from "../repositories/auth.repositories.js";
 import { generateToken } from "../services/auth.service.js";
 
 export async function postUser(req, res) {
@@ -7,8 +8,7 @@ export async function postUser(req, res) {
   const hashPassword = bcrypt.hashSync(password, 10);
 
   try {
-    /* await insertUser(username, email, hashPassword, picture); */
-    console.log(email, password, username, picture);
+    await insertUser(username, email, hashPassword, picture);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
@@ -20,20 +20,18 @@ export async function signIn(req, res) {
   const { email, password } = req.body;
 
   try {
-    /* const user = await selectUser(email);
-      if (!user.rows[0]) {
-        return res.status(404).send("Usuário não cadastrado");
-      }
-  
-      const passwordOk = bcrypt.compareSync(password, user.rows[0].password);
-  
-      if (!passwordOk) {
-        return res.sendStatus(401);
-      } */
+    const user = await selectUser(email);
+    if (!user.rows[0]) {
+      return res.status(404).send("Usuário não cadastrado");
+    }
 
-    const token = generateToken(10); /* user.rows[0].id */
+    const passwordOk = bcrypt.compareSync(password, user.rows[0].password);
 
-    console.log(token);
+    if (!passwordOk) {
+      return res.sendStatus(401);
+    }
+
+    const token = generateToken(user.rows[0].id);
 
     res.status(201).send({ token });
   } catch (err) {
