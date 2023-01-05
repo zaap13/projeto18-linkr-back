@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { connection } from "../database/db.js";
 
 export async function authMiddleware(req, res, next) {
   const { authorization } = req.headers;
