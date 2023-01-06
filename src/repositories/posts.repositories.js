@@ -46,3 +46,4 @@ export function insertHashPost(postId, tagId) {
     [postId, tagId]
   );
 }
+
