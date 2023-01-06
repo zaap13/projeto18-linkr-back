@@ -4,6 +4,7 @@ import {
   checkTag,
   updateTag,
   insertHashPost,
+  listOfPosts,
 } from "../repositories/posts.repositories.js";
 
 export async function newPost(req, res) {
@@ -36,5 +37,10 @@ export async function newPost(req, res) {
 }
 
 export async function getAllPosts(req, res) {
-  res.send(200);
+  try {
+    const { rows } = await listOfPosts();
+    return res.send(rows);
+  } catch (error) {
+    res.send(error);
+  }
 }
