@@ -12,6 +12,9 @@ export function insertPost(newPost) {
   );
 }
 
+export function listOfPosts() {
+  return connection.query("SELECT * FROM posts");
+}
 export function insertTag(hash) {
   return connection.query(
     `INSERT INTO hashtags (name)
@@ -46,4 +49,3 @@ export function insertHashPost(postId, tagId) {
     [postId, tagId]
   );
 }
-
