@@ -29,6 +29,7 @@ export async function authMiddleware(req, res, next) {
       return res.sendStatus(401);
     }
     req.user = user.rows[0];
+    res.locals.token = token;
     next();
   } catch (err) {
     console.log(err);
