@@ -33,7 +33,13 @@ export async function signIn(req, res) {
 
     const token = generateToken(user.rows[0].id);
 
-    res.status(201).send({ token });
+    const { username, picture } = user.rows[0];
+
+    res.status(201).send({
+      token,
+      username,
+      picture,
+    });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
