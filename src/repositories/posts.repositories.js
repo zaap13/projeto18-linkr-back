@@ -13,7 +13,9 @@ export function insertPost(newPost) {
 }
 
 export function listOfPosts() {
-  return connection.query("SELECT * FROM posts");
+  return connection.query(
+    'SELECT u.username AS name,p.url,p.content,u.picture FROM posts p JOIN users u ON p."userId"=u.id ORDER BY p."createdAt" DESC LIMIT 20;'
+  );
 }
 export function insertTag(hash) {
   return connection.query(
