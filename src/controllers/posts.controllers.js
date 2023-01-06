@@ -34,3 +34,7 @@ export async function newPost(req, res) {
     res.status(500).send(err);
   }
 }
+
+export async function getAllPosts(req, res) {
+  res.send(200);
+}
