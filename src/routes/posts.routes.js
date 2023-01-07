@@ -7,6 +7,6 @@ const router = Router();
 
 router.post("/posts", authMiddleware, postsMiddleware, newPost);
 
-router.get("/posts", getAllPosts);
+router.get("/posts", authMiddleware, getAllPosts);
 
 export default router;

@@ -11,3 +11,16 @@ export function selectIdByHash(hash) {
     `SELECT id FROM hashtags WHERE hashtags.name = '#${hash}'`
   );
 }
+
+export function selectTrending() {
+  return connection.query(
+    `SELECT hashtags.name 
+    FROM "hashtags" 
+    JOIN "hashPost" 
+    ON hashtags.id = "hashPost"."hashtagId" 
+    GROUP BY hashtags.id 
+    ORDER BY hashtags.count DESC 
+    LIMIT 10
+    `
+  );
+}
