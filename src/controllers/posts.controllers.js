@@ -5,6 +5,8 @@ import {
   updateTag,
   insertHashPost,
   listOfPosts,
+  findPost,
+  deletePost
 } from "../repositories/posts.repositories.js";
 
 export async function newPost(req, res) {
@@ -43,4 +45,21 @@ export async function getAllPosts(req, res) {
   } catch (error) {
     res.send(error);
   }
+}
+
+export async function removePost(req, res) {
+  const { id }  = req.params;
+
+    try {
+      const { rows: post } = await findPost(id); 
+
+      if(post[0] !== undefined) {
+          await deletePost(id);
+          return res.sendStatus(200);
+      } else {
+          return res.sendStatus(404); 
+      }
+    } catch (err) {
+        return res.status(500).send(err);
+    }
 }

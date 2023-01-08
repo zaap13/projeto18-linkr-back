@@ -14,7 +14,7 @@ export function insertPost(newPost) {
 
 export function listOfPosts() {
   return connection.query(
-    'SELECT u.id AS "userId", u.username AS name, p.url,p.content,u.picture FROM posts p JOIN users u ON p."userId"=u.id ORDER BY p."createdAt" DESC LIMIT 20;'
+    'SELECT u.id AS "userId", u.username AS name, p.id AS "postId", p.url,p.content,u.picture FROM posts p JOIN users u ON p."userId"=u.id ORDER BY p."createdAt" DESC LIMIT 20;'
   );
 }
 export function insertTag(hash) {
@@ -49,5 +49,23 @@ export function insertHashPost(postId, tagId) {
     VALUES($1, $2)
     `,
     [postId, tagId]
+  );
+}
+
+export function findPost(id) {
+  return connection.query(
+    `
+    SELECT * FROM posts WHERE id = $1;
+    `, 
+    [id]
+  );
+}
+
+export function deletePost(id) {
+  return connection.query(
+    `
+    DELETE FROM posts WHERE id = $1;
+    `, 
+    [id]
   );
 }
