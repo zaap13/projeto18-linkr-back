@@ -32,6 +32,7 @@ export async function userPageData(req, res) {
         };
 
         const objUserPage = {
+            userId: userData.rows[0].id,
             username: userData.rows[0].username,
             picture: userData.rows[0].picture,
             posts: objUserPosts
