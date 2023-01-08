@@ -9,6 +9,7 @@ export async function userPageData(req, res) {
         const userPosts = await getUserPosts(userId);
        
         const objUserPage = {
+            userId: userData.rows[0].id,
             username: userData.rows[0].username,
             picture: userData.rows[0].picture,
             posts: userPosts.rows
