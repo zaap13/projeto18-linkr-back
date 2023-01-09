@@ -8,7 +8,7 @@ export async function postUser(req, res) {
   const hashPassword = bcrypt.hashSync(password, 10);
 
   try {
-    await insertUser(username.toLowercase(), email, hashPassword, picture);
+    await insertUser(username, email, hashPassword, picture);
     res.sendStatus(201);
   } catch (err) {
     console.log(err);
