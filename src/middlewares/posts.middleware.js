@@ -1,17 +1,21 @@
 import { postsSchema } from "../models/posts.model.js";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
+import getMetaData from "metadata-scraper";
 
-export function postsMiddleware(req, res, next) {
-  const verified = jwt.verify(res.locals.token, process.env.SECRET_JWT);
+export async function postsMiddleware(req, res, next) {
+  const { error } = postsSchema.validate(req.body, { abortEarly: false });
+
+  const { title, description, url, image } = await getMetaData(req.body.url);
+
   const newPost = {
-    userId: verified.id,
-    url: req.body.url,
+    userId: req.user.id,
     content: req.body.content,
+    url,
+    title,
+    description,
+    image,
   };
 
-  const { error } = postsSchema.validate(newPost, { abortEarly: false });
+  console.log(newPost);
 
   if (error) {
     const err = error.details.map((d) => d.message);

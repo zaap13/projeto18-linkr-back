@@ -1,20 +1,27 @@
 import { connection } from "../database/db.js";
 
 export function insertPost(newPost) {
-  const { userId, url, content } = newPost;
+  const { userId, url, content, title, description, image } = newPost;
 
   return connection.query(
     `
-        INSERT INTO posts ("userId", url, content)
-        VALUES ($1, $2, $3)
+        INSERT INTO posts ("userId", url, content, title, description, image)
+        VALUES ($1, $2, $3, $4, $5, $6)
         RETURNING id`,
-    [userId, url, content]
+    [userId, url, content, title, description, image]
   );
 }
 
 export function listOfPosts() {
   return connection.query(
-    'SELECT u.id AS "userId", u.username AS name, p.id AS "postId", p.url,p.content,u.picture FROM posts p JOIN users u ON p."userId"=u.id ORDER BY p."createdAt" DESC LIMIT 20;'
+    `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, p.title, u.username, u.picture, COUNT(l."userId") AS likes
+    FROM posts p
+    LEFT JOIN likes l ON p.id = l."postId"
+    JOIN users u 
+    ON u.id = p."userId"
+    GROUP BY p.id, u.id
+    ORDER BY p."createdAt" DESC
+    LIMIT 20;`
   );
 }
 export function insertTag(hash) {
@@ -56,7 +63,7 @@ export function findPost(id) {
   return connection.query(
     `
     SELECT * FROM posts WHERE id = $1;
-    `, 
+    `,
     [id]
   );
 }
@@ -65,7 +72,7 @@ export function deletePost(id) {
   return connection.query(
     `
     DELETE FROM posts WHERE id = $1;
-    `, 
+    `,
     [id]
   );
 }
