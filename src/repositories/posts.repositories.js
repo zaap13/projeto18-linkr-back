@@ -99,3 +99,28 @@ export function editPost(id, content) {
      WHERE posts.id = '${id}'`
   );
 }
+
+export function likePost(userId, postId) {
+  return connection.query(
+    `INSERT INTO likes 
+    ("userId", "postId") 
+   VALUES 
+    ($1, $2)`,
+    [userId, postId]
+  );
+}
+
+export function unlikePost(userId, postId) {
+  return connection.query(
+    `DELETE FROM likes l WHERE (l."userId" = $1 AND l."postId" = $2)`,
+    [userId, postId]
+  );
+}
+
+export function userLikes(userId) {
+  return connection.query(
+    `SELECT l."postId" FROM likes l JOIN users u ON u.id = l."userId" WHERE u.id = $1`,
+    [userId]
+  );
+}
+

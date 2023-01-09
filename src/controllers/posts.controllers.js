@@ -10,6 +10,9 @@ import {
   deleteTag,
   deleteHash,
   editPost,
+  likePost,
+  unlikePost,
+  userLikes,
 } from "../repositories/posts.repositories.js";
 import { getWhoLiked } from "../repositories/users.repositories.js";
 
@@ -140,5 +143,38 @@ export async function putPost(req, res) {
   } catch (err) {
     return res.status(500).send(err);
     console.log(err);
+  }
+}
+
+export async function insertLike(req, res) {
+  const postid = req.params.id;
+  const userId = req.user.id;
+
+  try {
+    await likePost(userId, postid);
+    return res.sendStatus(201);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
+export async function removeLike(req, res) {
+  const postid = req.params.id;
+  const userId = req.user.id;
+  try {
+    await unlikePost(userId, postid);
+    return res.sendStatus(201);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
+export async function getUserLikes(req, res) {
+  const userId = req.user.id;
+  try {
+    const { rows } = await userLikes(userId);
+    return res.send(rows);
+  } catch (error) {
+    res.send(error);
   }
 }
