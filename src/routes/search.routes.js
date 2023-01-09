@@ -4,6 +4,6 @@ import { searchUsers } from "../controllers/search.controllers.js";
 
 const router = Router();
 
-router.get("/search", authMiddleware, searchUsers);
+router.get("/search/:input", authMiddleware, searchUsers);
 
 export default router;
