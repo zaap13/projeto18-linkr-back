@@ -76,3 +76,18 @@ export function deletePost(id) {
     [id]
   );
 }
+
+export function deleteTag(hash) {
+  return connection.query(
+    `UPDATE hashtags
+     SET count = count - 1
+     WHERE hashtags.name = '${hash}'`
+  );
+}
+
+export function deleteHash(id) {
+  return connection.query(
+    `DELETE FROM "hashPost" WHERE "hashPost"."postId" = $1`,
+    [id]
+  );
+}

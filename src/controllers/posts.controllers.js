@@ -7,6 +7,8 @@ import {
   listOfPosts,
   findPost,
   deletePost,
+  deleteTag,
+  deleteHash,
 } from "../repositories/posts.repositories.js";
 import { getWhoLiked } from "../repositories/users.repositories.js";
 
@@ -74,12 +76,23 @@ export async function removePost(req, res) {
     const { rows: post } = await findPost(id);
 
     if (post[0] !== undefined) {
+      if (post[0].content) {
+        const hashs = post[0].content.match(/#\w+/g);
+        if (hashs) {
+          hashs.forEach(async (hash) => {
+            await deleteTag(hash);
+          });
+        }
+      }
+      await deleteHash(id);
       await deletePost(id);
       return res.sendStatus(200);
+      // aqui ta dando erro por conta da quantidade de conexões com o deploy do BD
     } else {
       return res.sendStatus(404);
     }
   } catch (err) {
     return res.status(500).send(err);
+    console.log(err);
   }
 }
