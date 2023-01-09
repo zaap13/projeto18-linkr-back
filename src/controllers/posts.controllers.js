@@ -9,6 +9,7 @@ import {
   deletePost,
   deleteTag,
   deleteHash,
+  editPost,
 } from "../repositories/posts.repositories.js";
 import { getWhoLiked } from "../repositories/users.repositories.js";
 
@@ -86,6 +87,51 @@ export async function removePost(req, res) {
       }
       await deleteHash(id);
       await deletePost(id);
+      return res.sendStatus(200);
+      // aqui ta dando erro por conta da quantidade de conexões com o deploy do BD
+    } else {
+      return res.sendStatus(404);
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+    console.log(err);
+  }
+}
+
+export async function putPost(req, res) {
+  const { id } = req.params;
+  const { content } = req.body;
+
+  const newHashs = content?.match(/#\w+/g);
+
+  try {
+    const { rows: post } = await findPost(id);
+
+    if (post[0] !== undefined) {
+      if (post[0].content) {
+        const hashs = post[0].content.match(/#\w+/g);
+        if (hashs) {
+          hashs.forEach(async (hash) => {
+            await deleteTag(hash);
+          });
+        }
+      }
+      await deleteHash(id);
+      await editPost(id);
+
+      if (newHashs) {
+        hashs.forEach(async (hash) => {
+          const hashExists = await checkTag(hash);
+          if (hashExists.rows[0]) {
+            await updateTag(hash);
+            await insertHashPost(id, hashExists.rows[0].id);
+          } else {
+            const tagId = await insertTag(hash);
+            await insertHashPost(id, tagId.rows[0].id);
+          }
+        });
+      }
+
       return res.sendStatus(200);
       // aqui ta dando erro por conta da quantidade de conexões com o deploy do BD
     } else {
