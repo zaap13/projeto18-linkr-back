@@ -95,7 +95,7 @@ export function deleteHash(id) {
 export function editPost(id, content) {
   return connection.query(
     `UPDATE posts
-     SET content = ${content}
+     SET content = '${content}'
      WHERE posts.id = '${id}'`
   );
 }

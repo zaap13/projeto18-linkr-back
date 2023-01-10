@@ -120,10 +120,13 @@ export async function putPost(req, res) {
         }
       }
       await deleteHash(id);
-      await editPost(id);
+
+      console.log(content);
+      await editPost(id, content);
+      console.log(id);
 
       if (newHashs) {
-        hashs.forEach(async (hash) => {
+        newHashs.forEach(async (hash) => {
           const hashExists = await checkTag(hash);
           if (hashExists.rows[0]) {
             await updateTag(hash);
@@ -141,8 +144,8 @@ export async function putPost(req, res) {
       return res.sendStatus(404);
     }
   } catch (err) {
-    return res.status(500).send(err);
     console.log(err);
+    return res.status(500).send(err);
   }
 }
 
