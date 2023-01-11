@@ -14,14 +14,22 @@ export function insertPost(newPost) {
 
 export function listOfPosts() {
   return connection.query(
-    `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, p.title, u.username, u.picture, COUNT(l."userId") AS likes
-    FROM posts p
-    LEFT JOIN likes l ON p.id = l."postId"
-    JOIN users u 
-    ON u.id = p."userId"
-    GROUP BY p.id, u.id
-    ORDER BY p."createdAt" DESC
-    LIMIT 20;`
+    `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
+    p.title, u.username, u.picture,  COALESCE(liker.liked, '[]') 
+    AS "whoLiked", COALESCE(commenter.commented, '[]') AS "comments"
+    FROM   posts p
+    JOIN users u ON u.id = p."userId"
+    LEFT JOIN LATERAL (
+       SELECT json_agg(json_build_object('userId', l."userId", 'username', u.username)) AS liked
+       FROM   likes l JOIN users u ON u.id = l."userId"
+       WHERE  l."postId" = p.id
+       ) liker ON true
+    LEFT JOIN LATERAL (
+       SELECT json_agg(json_build_object('userId', c."userId", 'username', u.username, 'comment', c.content)) AS commented
+       FROM   comments c JOIN users u ON u.id = c."userId"
+       WHERE  c."postId" = p.id
+       ) commenter ON true
+    ORDER BY p."createdAt" DESC`
   );
 }
 export function insertTag(hash) {
@@ -123,4 +131,3 @@ export function userLikes(userId) {
     [userId]
   );
 }
-

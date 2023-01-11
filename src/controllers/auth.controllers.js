@@ -31,11 +31,11 @@ export async function signIn(req, res) {
       return res.sendStatus(401);
     }
 
-    const token = generateToken(user.rows[0].id);
-
-    const { username, picture } = user.rows[0];
+    const { id, username, picture } = user.rows[0];
+    const token = generateToken(id);
 
     res.status(201).send({
+      id,
       token,
       username,
       picture,
