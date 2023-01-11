@@ -1,4 +1,4 @@
-import { getUserData, getUserPosts, getWhoLiked } from "../repositories/users.repositories.js";
+import { getUserData, getUserPosts, getWhoLiked, postFollow, deleteFollow } from "../repositories/users.repositories.js";
 import { followSchema } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -62,7 +62,10 @@ export async function followUser(req, res) {
           return res.status(422).send(errors);
         };
 
+        await postFollow(userId, followerId);
+
         res.sendStatus(200);
+
     } catch(err) {
         res.status(500).send(err.message);
     };
@@ -73,8 +76,10 @@ export async function unfollowUser(req, res) {
     const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
 
     try {
+        await deleteFollow(userId, followerId);
 
         res.sendStatus(200);
+        
     } catch(err) {
         res.status(500).send(err.message);
     };
