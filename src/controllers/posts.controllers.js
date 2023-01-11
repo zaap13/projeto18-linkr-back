@@ -14,7 +14,6 @@ import {
   unlikePost,
   userLikes,
 } from "../repositories/posts.repositories.js";
-import { getWhoLiked } from "../repositories/users.repositories.js";
 
 export async function newPost(req, res) {
   const newPost = req.post;
@@ -47,25 +46,7 @@ export async function newPost(req, res) {
 
 export async function getAllPosts(req, res) {
   try {
-    const whoLiked = await getWhoLiked();
     const { rows } = await listOfPosts();
-    let objPosts = rows;
-
-    for (let i = 0; i < rows.length; i++) {
-      let arrWhoLiked = [];
-
-      for (let j = 0; j < whoLiked.rows.length; j++) {
-        if (rows[i].id === whoLiked.rows[j].id) {
-          arrWhoLiked.push(whoLiked.rows[j].whoLiked);
-        }
-
-        objPosts.forEach((objPosts) => {
-          if (objPosts.id === rows[i].id) {
-            objPosts.whoLiked = arrWhoLiked;
-          }
-        });
-      }
-    }
 
     return res.send(rows);
   } catch (error) {
