@@ -8,7 +8,9 @@ export async function authMiddleware(req, res, next) {
   let err;
 
   if (!token) {
-    return res.sendStatus(401);
+    console.log("aqui");
+
+    return res.status(401).send({ message: "Token not found!" });
   }
 
   jwt.verify(token, process.env.SECRET_JWT, (error, decoded) => {
@@ -19,6 +21,8 @@ export async function authMiddleware(req, res, next) {
     }
   });
   if (err) {
+    console.log("aqui");
+
     return res.status(401).send({ message: "Invalid Token!" });
   }
   try {
@@ -26,10 +30,10 @@ export async function authMiddleware(req, res, next) {
       `SELECT id FROM users WHERE users.id = '${id}'`
     );
     if (!user.rows[0]) {
-      return res.sendStatus(401);
+      console.log("aqui");
+      return res.status(401).send({ message: "User not found!" });
     }
     req.user = user.rows[0];
-    res.locals.token = token;
     next();
   } catch (err) {
     console.log(err);

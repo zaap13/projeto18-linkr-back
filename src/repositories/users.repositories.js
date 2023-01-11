@@ -8,25 +8,28 @@ export function getUserData(userId) {
 };
 
 export function getUserPosts(userId) {
-  return connection.query(`
-    SELECT p.id, p."userId", p.url, p.content, p.image, p.description, p.title, u.username, u.picture, COUNT(l."userId") AS likes
-    FROM posts p
-    LEFT JOIN likes l ON p.id = l."postId"
-    JOIN users u 
-    ON u.id = p."userId"
-    WHERE p."userId"=$1
-    GROUP BY p.id, u.id
-    ORDER BY p."createdAt" DESC`,
-    [userId]
-  );
-};
+   return connection.query(
+    ` 
+    SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
+    p.title, u.username, u.picture,  COALESCE(liker.liked, '[]') 
+    AS "whoLiked", COALESCE(commenter.commented, '[]') AS "comments"
+    FROM   posts p
+    JOIN users u ON u.id = p."userId"
+    LEFT JOIN LATERAL (
+      SELECT json_agg(json_build_object('userId', l."userId", 'username', u.username)) AS liked
+      FROM   likes l JOIN users u ON u.id = l."userId"
+      WHERE  l."postId" = p.id
+      ) liker ON true
+    LEFT JOIN LATERAL (
+      SELECT json_agg(json_build_object('userId', c."userId", 'username', u.username, 'comment', c.content)) AS commented
+      FROM   comments c JOIN users u ON u.id = c."userId"
+      WHERE  c."postId" = p.id
+      ) commenter ON true
+        WHERE p."userId"=$1
+    ORDER BY p."createdAt" DESC
 
-export function getWhoLiked() {
-  return connection.query(`
-    SELECT p.id, p.url, p.content, l."userId", u.username AS "whoLiked"
-    FROM posts p
-    LEFT JOIN likes l ON p.id = l."postId"
-    JOIN users u ON l."userId"=u.id;`
+`,
+    [userId]
   );
 };
 
