@@ -72,13 +72,13 @@ export async function removePost(req, res) {
       await deleteHash(id);
       await deletePost(id);
       return res.sendStatus(200);
-      // aqui ta dando erro por conta da quantidade de conexões com o deploy do BD
     } else {
       return res.sendStatus(404);
     }
   } catch (err) {
-    return res.status(500).send(err);
     console.log(err);
+
+    return res.status(500).send(err);
   }
 }
 
@@ -102,9 +102,7 @@ export async function putPost(req, res) {
       }
       await deleteHash(id);
 
-      console.log(content);
       await editPost(id, content);
-      console.log(id);
 
       if (newHashs) {
         newHashs.forEach(async (hash) => {
@@ -120,7 +118,6 @@ export async function putPost(req, res) {
       }
 
       return res.sendStatus(200);
-      // aqui ta dando erro por conta da quantidade de conexões com o deploy do BD
     } else {
       return res.sendStatus(404);
     }
