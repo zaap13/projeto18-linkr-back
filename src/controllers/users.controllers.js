@@ -1,4 +1,7 @@
 import { getUserData, getUserPosts, getWhoLiked } from "../repositories/users.repositories.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function userPageData(req, res) {
     const userId = req.params.id;
@@ -44,4 +47,15 @@ export async function userPageData(req, res) {
     catch (err) {
         res.status(500).send(err);
     };
+};
+
+export async function followUser(req, res) {
+    const userId = req.params.id;
+    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id
+    console.log(followerId)
+};
+
+export async function unfollowUser(req, res) {
+    const userId = req.params.id;
+
 };
