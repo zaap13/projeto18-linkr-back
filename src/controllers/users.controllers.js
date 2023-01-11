@@ -1,4 +1,5 @@
 import { getUserData, getUserPosts, getWhoLiked } from "../repositories/users.repositories.js";
+import { followSchema } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
@@ -51,11 +52,30 @@ export async function userPageData(req, res) {
 
 export async function followUser(req, res) {
     const userId = req.params.id;
-    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id
-    console.log(followerId)
+    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
+   
+    try {
+        const { error } = followSchema.validate({userId, followerId}, { abortEarly: false });
+
+        if (error) {
+          const errors = error.details.map((detail) => detail.message);
+          return res.status(422).send(errors);
+        };
+
+        res.sendStatus(200);
+    } catch(err) {
+        res.status(500).send(err.message);
+    };
 };
 
 export async function unfollowUser(req, res) {
     const userId = req.params.id;
+    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
 
+    try {
+
+        res.sendStatus(200);
+    } catch(err) {
+        res.status(500).send(err.message);
+    };
 };
