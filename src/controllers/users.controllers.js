@@ -1,9 +1,5 @@
-import { getUserData, getUserPosts, getWhoLiked, postFollow, deleteFollow } from "../repositories/users.repositories.js";
+import { getUserData, getUserPosts, postFollow, deleteFollow } from "../repositories/users.repositories.js";
 import { followSchema } from "../models/user.model.js";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
-
 
 export async function userPageData(req, res) {
   const userId = req.params.id;
@@ -19,16 +15,17 @@ export async function userPageData(req, res) {
       picture: userData.rows[0].picture,
       posts: userPosts.rows,
     };
+
     res.status(200).send(objUserPage);
+
   } catch (err) {
     res.status(500).send(err);
   }
-}
 };
 
 export async function followUser(req, res) {
     const userId = req.params.id;
-    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
+    const followerId = req.user.id;
    
     try {
         const { error } = followSchema.validate({userId, followerId}, { abortEarly: false });
@@ -49,7 +46,7 @@ export async function followUser(req, res) {
 
 export async function unfollowUser(req, res) {
     const userId = req.params.id;
-    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
+    const followerId = req.user.id;
 
     try {
         await deleteFollow(userId, followerId);
@@ -59,4 +56,4 @@ export async function unfollowUser(req, res) {
     } catch(err) {
         res.status(500).send(err.message);
     };
-}
+};

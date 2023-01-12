@@ -1,11 +1,8 @@
 import { getFollowedUsers, getAllUsers } from "../repositories/search.repositories.js";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config();
 
 export async function searchUsers(req, res) {
     const input = req.params.input;
-    const followerId = jwt.verify(res.locals.token, process.env.SECRET_JWT).id;
+    const followerId = req.user.id;
     let arrOrder = [];
     let searchedUsers = [];
 
