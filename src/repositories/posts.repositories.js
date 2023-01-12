@@ -16,7 +16,7 @@ export function listOfPosts() {
   return connection.query(
     `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
     p.title, u.username, u.picture,  COALESCE(liker.liked, '[]') 
-    AS "whoLiked", COALESCE(commenter.commented, '[]') AS "comments"
+    AS "whoLiked", COALESCE(commenter.commented, '[]') AS "comments", r."repostUserId", r."repostUsername", "repostCounter"."repostCount"
     FROM   posts p
     JOIN users u ON u.id = p."userId"
     LEFT JOIN LATERAL (
@@ -29,7 +29,13 @@ export function listOfPosts() {
        FROM   comments c JOIN users u ON u.id = c."userId"
        WHERE  c."postId" = p.id
        ) commenter ON true
-    ORDER BY p."createdAt" DESC`
+	   LEFT JOIN LATERAL (
+       SELECT COUNT(*) AS "repostCount"
+       FROM reposts
+       WHERE  reposts."postId" = p.id
+		) "repostCounter" ON true
+	LEFT JOIN (SELECT reposts."postId" AS "repostId", reposts."userId" AS "repostUserId", users.username AS "repostUsername" FROM reposts JOIN users ON users.id = reposts."userId") r ON p.id = r."repostId"
+	ORDER BY p."createdAt" DESC`
   );
 }
 export function insertTag(hash) {
@@ -129,5 +135,22 @@ export function userLikes(userId) {
   return connection.query(
     `SELECT l."postId" FROM likes l JOIN users u ON u.id = l."userId" WHERE u.id = $1`,
     [userId]
+  );
+}
+
+export function insertShare(userId, postId) {
+  return connection.query(
+    `INSERT INTO reposts 
+    ("userId", "postId") 
+   VALUES 
+    ($1, $2)`,
+    [userId, postId]
+  );
+}
+
+export function removeShare(userId, postId) {
+  return connection.query(
+    `DELETE FROM reposts r WHERE (r."userId" = $1 AND r."postId" = $2)`,
+    [userId, postId]
   );
 }

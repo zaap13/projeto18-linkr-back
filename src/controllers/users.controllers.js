@@ -1,3 +1,4 @@
+
 import { getUserData, getUserPosts, postFollow, deleteFollow } from "../repositories/users.repositories.js";
 import { followSchema } from "../models/user.model.js";
 
@@ -27,29 +28,35 @@ export async function followUser(req, res) {
     const userId = req.params.id;
     const followerId = req.user.id;
    
-    try {
-        const { error } = followSchema.validate({userId, followerId}, { abortEarly: false });
 
-        if (error) {
-          const errors = error.details.map((detail) => detail.message);
-          return res.status(422).send(errors);
-        };
 
-        await postFollow(userId, followerId);
+  try {
+    const { error } = followSchema.validate(
+      { userId, followerId },
+      { abortEarly: false }
+    );
 
-        res.sendStatus(200);
+    if (error) {
+      const errors = error.details.map((detail) => detail.message);
+      return res.status(422).send(errors);
+    }
 
-    } catch(err) {
-        res.status(500).send(err.message);
-    };
-};
+    await postFollow(userId, followerId);
+
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+}
 
 export async function unfollowUser(req, res) {
-    const userId = req.params.id;
-    const followerId = req.user.id;
+  const userId = req.params.id;
+  const followerId = req.user.id;
 
-    try {
-        await deleteFollow(userId, followerId);
+
+  try {
+    await deleteFollow(userId, followerId);
+
 
         res.sendStatus(200);
         

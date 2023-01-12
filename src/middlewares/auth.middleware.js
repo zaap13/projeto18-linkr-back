@@ -7,6 +7,7 @@ export async function authMiddleware(req, res, next) {
   let id = 0;
   let err;
 
+
   if (!token) {  
     return res.status(401).send({ message: "Token not found!" });
   };
@@ -20,6 +21,7 @@ export async function authMiddleware(req, res, next) {
   });
 
   if (err) {
+
       return res.status(401).send({ message: "Invalid Token!" });
   };
 
@@ -29,7 +31,6 @@ export async function authMiddleware(req, res, next) {
     );
 
     if (!user.rows[0]) {
-      console.log("aqui");
       return res.status(401).send({ message: "User not found!" });
     }
 
