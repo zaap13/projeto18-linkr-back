@@ -6,38 +6,44 @@ export function insertPost(newPost) {
   return connection.query(
     `
         INSERT INTO posts ("userId", url, content, title, description, image)
-        VALUES ($1, $2, $3, $4, $5, $6)
-        RETURNING id`,
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id`,        
     [userId, url, content, title, description, image]
   );
 }
 
-export function listOfPosts() {
+export function listOfPosts(followerId) {
   return connection.query(
-    `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
+    `
+    SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
     p.title, u.username, u.picture,  COALESCE(liker.liked, '[]') 
     AS "whoLiked", COALESCE(commenter.commented, '[]') AS "comments", r."repostUserId", r."repostUsername", "repostCounter"."repostCount"
     FROM   posts p
+    JOIN follow f ON f."userId" = p."userId"
     JOIN users u ON u.id = p."userId"
     LEFT JOIN LATERAL (
-       SELECT json_agg(json_build_object('userId', l."userId", 'username', u.username)) AS liked
-       FROM   likes l JOIN users u ON u.id = l."userId"
-       WHERE  l."postId" = p.id
-       ) liker ON true
+      SELECT json_agg(json_build_object('userId', l."userId", 'username', u.username)) AS liked
+      FROM   likes l JOIN users u ON u.id = l."userId"
+      WHERE  l."postId" = p.id
+      ) liker ON true
     LEFT JOIN LATERAL (
-       SELECT json_agg(json_build_object('userId', c."userId", 'username', u.username, 'comment', c.content)) AS commented
-       FROM   comments c JOIN users u ON u.id = c."userId"
-       WHERE  c."postId" = p.id
-       ) commenter ON true
+      SELECT json_agg(json_build_object('userId', c."userId", 'username', u.username, 'comment', c.content)) AS commented
+      FROM   comments c JOIN users u ON u.id = c."userId"
+      WHERE  c."postId" = p.id
+      ) commenter ON true
 	   LEFT JOIN LATERAL (
        SELECT COUNT(*) AS "repostCount"
        FROM reposts
        WHERE  reposts."postId" = p.id
 		) "repostCounter" ON true
 	LEFT JOIN (SELECT reposts."postId" AS "repostId", reposts."userId" AS "repostUserId", users.username AS "repostUsername" FROM reposts JOIN users ON users.id = reposts."userId") r ON p.id = r."repostId"
-	ORDER BY p."createdAt" DESC`
+	 WHERE f."followerId" = $1
+    ORDER BY p."createdAt" DESC;
+    `,
+    [followerId]
   );
 }
+
 export function insertTag(hash) {
   return connection.query(
     `INSERT INTO hashtags (name)
