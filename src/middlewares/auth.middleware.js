@@ -8,8 +8,6 @@ export async function authMiddleware(req, res, next) {
   let err;
 
   if (!token) {
-    console.log("aqui");
-
     return res.status(401).send({ message: "Token not found!" });
   }
 
@@ -21,8 +19,6 @@ export async function authMiddleware(req, res, next) {
     }
   });
   if (err) {
-    console.log("aqui");
-
     return res.status(401).send({ message: "Invalid Token!" });
   }
   try {
@@ -30,7 +26,6 @@ export async function authMiddleware(req, res, next) {
       `SELECT id FROM users WHERE users.id = '${id}'`
     );
     if (!user.rows[0]) {
-      console.log("aqui");
       return res.status(401).send({ message: "User not found!" });
     }
     req.user = user.rows[0];

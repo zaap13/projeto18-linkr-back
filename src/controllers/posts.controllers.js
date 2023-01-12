@@ -13,6 +13,8 @@ import {
   likePost,
   unlikePost,
   userLikes,
+  insertShare,
+  removeShare,
 } from "../repositories/posts.repositories.js";
 
 export async function newPost(req, res) {
@@ -128,11 +130,11 @@ export async function putPost(req, res) {
 }
 
 export async function insertLike(req, res) {
-  const postid = req.params.id;
+  const postId = req.params.id;
   const userId = req.user.id;
 
   try {
-    await likePost(userId, postid);
+    await likePost(userId, postId);
     return res.sendStatus(201);
   } catch (error) {
     res.send(error);
@@ -140,10 +142,10 @@ export async function insertLike(req, res) {
 }
 
 export async function removeLike(req, res) {
-  const postid = req.params.id;
+  const postId = req.params.id;
   const userId = req.user.id;
   try {
-    await unlikePost(userId, postid);
+    await unlikePost(userId, postId);
     return res.sendStatus(201);
   } catch (error) {
     res.send(error);
@@ -155,6 +157,30 @@ export async function getUserLikes(req, res) {
   try {
     const { rows } = await userLikes(userId);
     return res.send(rows);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
+export async function postShare(req, res) {
+  const postId = req.params.id;
+  const userId = req.user.id;
+
+  console.log(userId, postId);
+  try {
+    await insertShare(userId, postId);
+    return res.sendStatus(201);
+  } catch (error) {
+    res.send(error);
+  }
+}
+
+export async function deleteShare(req, res) {
+  const postId = req.params.id;
+  const userId = req.user.id;
+  try {
+    await removeShare(userId, postId);
+    return res.sendStatus(200);
   } catch (error) {
     res.send(error);
   }
