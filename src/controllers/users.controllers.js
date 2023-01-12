@@ -1,12 +1,6 @@
-import {
-  getUserData,
-  getUserPosts,
-  postFollow,
-  deleteFollow,
-} from "../repositories/users.repositories.js";
+
+import { getUserData, getUserPosts, postFollow, deleteFollow } from "../repositories/users.repositories.js";
 import { followSchema } from "../models/user.model.js";
-import dotenv from "dotenv";
-dotenv.config();
 
 export async function userPageData(req, res) {
   const userId = req.params.id;
@@ -22,15 +16,19 @@ export async function userPageData(req, res) {
       picture: userData.rows[0].picture,
       posts: userPosts.rows,
     };
+
     res.status(200).send(objUserPage);
+
   } catch (err) {
     res.status(500).send(err);
   }
-}
+};
 
 export async function followUser(req, res) {
-  const userId = req.params.id;
-  const followerId = req.user.id;
+    const userId = req.params.id;
+    const followerId = req.user.id;
+   
+
 
   try {
     const { error } = followSchema.validate(
@@ -55,11 +53,14 @@ export async function unfollowUser(req, res) {
   const userId = req.params.id;
   const followerId = req.user.id;
 
+
   try {
     await deleteFollow(userId, followerId);
 
-    res.sendStatus(200);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-}
+
+        res.sendStatus(200);
+        
+    } catch(err) {
+        res.status(500).send(err.message);
+    };
+};
