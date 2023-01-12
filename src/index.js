@@ -5,6 +5,8 @@ import postsRoutes from "./routes/posts.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import hashRoutes from "./routes/hashtags.routes.js";
 import searchRoutes from "./routes/search.routes.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 app.use(cors());
