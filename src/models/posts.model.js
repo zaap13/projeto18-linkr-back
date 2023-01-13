@@ -7,6 +7,5 @@ export const postsSchema = joi.object({
 
 export const commentsSchema = joi.object({
     content: joi.string().max(280).required(),
-    userId: joi.number().integer().required(),
-    postId: joi.number().integer().required()
+    userId: joi.number().integer().required()
 });

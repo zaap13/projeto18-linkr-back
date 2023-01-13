@@ -1,13 +1,12 @@
 import { commentsSchema } from "../models/posts.model.js";
 
 export async function commentsMiddleware(req, res, next) {
-    const { content, userId, postId } = req.body;
+    const { content, userId } = req.body;
     const { error } = commentsSchema.validate(req.body, { abortEarly: false });
   
-    const newComment = {
+    const newComment = { 
       content, 
-      userId, 
-      postId 
+      userId 
     };
   
     if(error) {

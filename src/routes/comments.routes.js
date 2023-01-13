@@ -5,7 +5,7 @@ import { commentsMiddleware } from "../middlewares/comments.middlewares.js";
 
 const router = Router();
 
-router.post("/comments", authMiddleware, commentsMiddleware, newComment);
+router.post("/comments/:postId", authMiddleware, commentsMiddleware, newComment);
 router.get("/comments", authMiddleware, getComments);
 
 export default router;
