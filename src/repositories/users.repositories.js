@@ -7,6 +7,13 @@ export function getUserData(userId) {
   );
 };
 
+export function getFollowed(userId, followerId) {
+  return connection.query(`
+  SELECT * FROM follow WHERE "userId"=$1 AND "followerId"=$2;`,
+    [userId, followerId]
+  );
+};
+
 export function getUserPosts(userId) {
    return connection.query(
     `SELECT p.id, p."userId", p.url, p.content, p.image, p.description, 
