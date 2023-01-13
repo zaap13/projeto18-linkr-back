@@ -48,7 +48,6 @@ export async function newPost(req, res) {
 
 export async function getPosts(req, res) {
   const followerId = req.user.id;
-
   try {
     const { rows } = await listOfPosts(followerId);
 
