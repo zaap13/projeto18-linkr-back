@@ -29,3 +29,15 @@ export async function newComment(req, res) {
         return res.status(500).send(err);
     }
 }
+
+export async function getComments(req, res) {
+    try {
+        const { rows: allComments } = await connection.query(`
+            SELECT * FROM comments;
+        `);
+
+        return res.send(allComments);
+    } catch (error) {
+        res.send(error);
+    }
+}
